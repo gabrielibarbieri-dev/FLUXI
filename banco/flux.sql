@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS convites_professor (
   COLLATE utf8mb4_unicode_ci;
 
 INSERT IGNORE INTO convites_professor (id, codigo_hash)
-VALUES (1, '860fdd448dcc6fa3b180b4b11d4268ab20005367e81b34832e3b99f65e864d8a');
+VALUES (1, '607152660a78347dcb385c2ac6b37a95602be1f6f92703dd37c79354e6a2094d');
 
 CREATE TABLE IF NOT EXISTS perguntas (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -169,14 +169,13 @@ VALUES
   ('por-f4-03', 'portugues', 4, 'Na frase “O livro que ganhei é divertido”, a palavra “que” retoma:', 'O livro', 'Eu', 'Ganhei', 'Divertido', 'A', '“Que” retoma “o livro” e introduz uma informação sobre ele.', 30),
   ('por-f4-04', 'portugues', 4, 'Qual palavra foi formada pela junção de “passa” e “tempo”?', 'passatempo', 'passatempoo', 'passa-tempos', 'tempo passa', 'A', '“Passatempo” é formada pela junção de “passa” e “tempo”.', 30),
   ('por-f4-05', 'portugues', 4, 'Leia: “A biblioteca, silenciosa e iluminada, convidava todos à leitura.” Qual é a ideia principal?', 'A biblioteca estava fechada', 'A biblioteca era um ambiente convidativo para ler', 'Todos precisavam sair da biblioteca', 'A leitura foi interrompida', 'B', 'As características “silenciosa e iluminada” mostram que o ambiente convidava as pessoas à leitura.', 30)
-AS nova_pergunta
 ON DUPLICATE KEY UPDATE
-  pergunta = nova_pergunta.pergunta,
-  alternativa_a = nova_pergunta.alternativa_a,
-  alternativa_b = nova_pergunta.alternativa_b,
-  alternativa_c = nova_pergunta.alternativa_c,
-  alternativa_d = nova_pergunta.alternativa_d,
-  resposta_correta = nova_pergunta.resposta_correta,
-  explicacao = nova_pergunta.explicacao,
-  pontos = nova_pergunta.pontos,
+  pergunta = VALUES(pergunta),
+  alternativa_a = VALUES(alternativa_a),
+  alternativa_b = VALUES(alternativa_b),
+  alternativa_c = VALUES(alternativa_c),
+  alternativa_d = VALUES(alternativa_d),
+  resposta_correta = VALUES(resposta_correta),
+  explicacao = VALUES(explicacao),
+  pontos = VALUES(pontos),
   ativa = 1;

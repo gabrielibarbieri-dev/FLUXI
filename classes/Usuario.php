@@ -296,6 +296,35 @@ final class Usuario
         }
     }
 
+    public function desvincularAlunoDoProfessor(int $alunoId): void
+    {
+        $this->conexao->beginTransaction();
+        try {
+            $aluno = $this->conexao->prepare(
+                "SELECT id FROM usuarios WHERE id = :id AND tipo = 'aluno' FOR UPDATE"
+            );
+            $aluno->execute(['id' => $alunoId]);
+            if ($aluno->fetchColumn() === false) {
+                throw new RuntimeException('Não foi possível localizar sua conta de aluno.');
+            }
+
+            $remover = $this->conexao->prepare(
+                'DELETE FROM professor_alunos WHERE aluno_id = :aluno_id'
+            );
+            $remover->execute(['aluno_id' => $alunoId]);
+            if ($remover->rowCount() !== 1) {
+                throw new RuntimeException('Você não está vinculado a um professor.');
+            }
+
+            $this->conexao->commit();
+        } catch (Throwable $erro) {
+            if ($this->conexao->inTransaction()) {
+                $this->conexao->rollBack();
+            }
+            throw $erro;
+        }
+    }
+
     public function emailExiste(string $email): bool
     {
         $consulta = $this->conexao->prepare(

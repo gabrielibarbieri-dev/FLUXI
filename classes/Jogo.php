@@ -246,12 +246,11 @@ final class Jogo
             $progresso = $this->conexao->prepare(
                 'INSERT INTO progresso (usuario_id, materia, fase, partidas, melhor_pontuacao, acertos, total_questoes, concluida)
                  VALUES (:usuario_id, :materia, :fase, 1, :pontuacao, :acertos, :total_questoes, 1)
-                 AS novo_progresso
                  ON DUPLICATE KEY UPDATE
-                    partidas = progresso.partidas + novo_progresso.partidas,
-                    melhor_pontuacao = GREATEST(progresso.melhor_pontuacao, novo_progresso.melhor_pontuacao),
-                    acertos = progresso.acertos + novo_progresso.acertos,
-                    total_questoes = progresso.total_questoes + novo_progresso.total_questoes,
+                    partidas = progresso.partidas + 1,
+                    melhor_pontuacao = GREATEST(progresso.melhor_pontuacao, VALUES(melhor_pontuacao)),
+                    acertos = progresso.acertos + VALUES(acertos),
+                    total_questoes = progresso.total_questoes + VALUES(total_questoes),
                     concluida = 1'
             );
             $progresso->execute([

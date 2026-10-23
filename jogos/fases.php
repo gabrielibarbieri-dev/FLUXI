@@ -76,6 +76,7 @@ $dadosFase = $faseAtual === null ? null : Jogo::FASES[$faseAtual];
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/acessibilidade.js" defer></script>
     <?php if ($faseAtual !== null && $erro === null): ?><script src="../js/jogo.js" defer></script><?php endif; ?>
 </head>
 <body>

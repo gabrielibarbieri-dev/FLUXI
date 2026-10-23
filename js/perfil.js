@@ -41,3 +41,14 @@ if (perfilForm) {
         }
     });
 }
+
+document.querySelectorAll(".student-unlink-form").forEach((form) => {
+    form.addEventListener("submit", (event) => {
+        const confirmado = window.confirm(
+            "Deseja se desvincular do professor? Seu progresso será mantido e você poderá escolher outro."
+        );
+        if (!confirmado) {
+            event.preventDefault();
+        }
+    });
+});

@@ -8,13 +8,25 @@ final class Conexao
     public static function obter(): PDO
     {
         if (self::$instancia === null) {
-            $host = getenv('FLUX_DB_HOST') ?: '127.0.0.1';
-            $database = getenv('FLUX_DB_NAME') ?: 'flux';
-            $username = getenv('FLUX_DB_USER') ?: 'root';
-            $password = getenv('FLUX_DB_PASSWORD') ?: '';
-            
-            // Portas para testar: se definida no env, usa ela; caso contrário, testa 3308 (porta do Laragon) e 3306
-            $portas = getenv('FLUX_DB_PORT') ? [(int) getenv('FLUX_DB_PORT')] : [3308, 3306];
+            $configuracao = [];
+            $arquivoConfiguracao = __DIR__ . '/../config/database.php';
+            if (is_file($arquivoConfiguracao)) {
+                $configuracaoCarregada = require $arquivoConfiguracao;
+                if (!is_array($configuracaoCarregada)) {
+                    throw new RuntimeException('A configuração do banco deve retornar um array.');
+                }
+                $configuracao = $configuracaoCarregada;
+            }
+
+            $host = getenv('FLUX_DB_HOST') ?: ($configuracao['host'] ?? '127.0.0.1');
+            $database = getenv('FLUX_DB_NAME') ?: ($configuracao['database'] ?? 'flux');
+            $username = getenv('FLUX_DB_USER') ?: ($configuracao['username'] ?? 'root');
+            $password = getenv('FLUX_DB_PASSWORD') ?: ($configuracao['password'] ?? '');
+
+            $portaConfigurada = getenv('FLUX_DB_PORT') ?: ($configuracao['port'] ?? null);
+            $portas = $portaConfigurada !== null
+                ? [(int) $portaConfigurada]
+                : [3308, 3306];
             $ultimoErro = null;
 
             foreach ($portas as $porta) {

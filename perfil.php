@@ -72,6 +72,7 @@ $progressoGeral = $resumo === null ? 0 : min(100, (int) round($resumo['fases_con
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/acessibilidade.js" defer></script>
     <script src="js/perfil.js" defer></script>
 </head>
 <body>
@@ -147,12 +148,19 @@ $progressoGeral = $resumo === null ? 0 : min(100, (int) round($resumo['fases_con
                                         <li><i class="bi bi-person-workspace" aria-hidden="true"></i> <?= $escapar($professor['nome']) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
-                                <p class="form-hint">Cada aluno pode estar vinculado a apenas um professor.</p>
+                                <form class="student-teacher-form student-unlink-form" action="api/aluno-professor.php" method="post">
+                                    <input type="hidden" name="csrf_token" value="<?= $escapar($_SESSION['csrf_token']) ?>">
+                                    <input type="hidden" name="acao" value="desvincular">
+                                    <button class="button button-small teacher-remove-button" type="submit">
+                                        <i class="bi bi-person-dash" aria-hidden="true"></i> Desvincular professor
+                                    </button>
+                                    <p class="form-hint">Depois de se desvincular, você poderá escolher outro professor. Seu progresso será mantido.</p>
+                                </form>
                             <?php else: ?>
                                 <p>Você ainda não está vinculado a um professor.</p>
                             <?php endif; ?>
                             <?php if ($professoresVinculados !== []): ?>
-                                <p class="form-hint">Você já está vinculado ao seu professor. Cada aluno pode escolher apenas um.</p>
+                                <p class="form-hint">Cada aluno pode estar vinculado a apenas um professor por vez.</p>
                             <?php elseif ($professoresDisponiveis !== []): ?>
                                 <form class="student-teacher-form" action="api/aluno-professor.php" method="post">
                                     <input type="hidden" name="csrf_token" value="<?= $escapar($_SESSION['csrf_token']) ?>">

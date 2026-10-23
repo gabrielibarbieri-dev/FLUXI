@@ -31,6 +31,28 @@ if (!is_string($tokenEnviado) || !hash_equals($_SESSION['csrf_token'] ?? '', $to
     voltarParaPerfilAluno('Sua sessão expirou. Atualize a página e tente novamente.');
 }
 
+$acao = $_POST['acao'] ?? 'vincular';
+if (!is_string($acao) || !in_array($acao, ['vincular', 'desvincular'], true)) {
+    voltarParaPerfilAluno('A ação solicitada não é válida.');
+}
+
+$alunoId = (int) $_SESSION['usuario_id'];
+require_once __DIR__ . '/../classes/Conexao.php';
+require_once __DIR__ . '/../classes/Usuario.php';
+
+try {
+    $repositorio = new Usuario(Conexao::obter());
+    if ($acao === 'desvincular') {
+        $repositorio->desvincularAlunoDoProfessor($alunoId);
+        voltarParaPerfilAluno('Você foi desvinculado do professor. Agora pode escolher outro.', 'success');
+    }
+} catch (PDOException $erro) {
+    error_log('FLUX: falha ao atualizar vínculo do aluno: ' . $erro->getMessage());
+    voltarParaPerfilAluno('Não foi possível atualizar seu professor agora. Confira a conexão com o banco de dados.');
+} catch (RuntimeException $erro) {
+    voltarParaPerfilAluno($erro->getMessage());
+}
+
 $professorId = filter_var($_POST['professor_id'] ?? null, FILTER_VALIDATE_INT, [
     'options' => ['min_range' => 1],
 ]);
@@ -38,12 +60,8 @@ if ($professorId === false || $professorId === null) {
     voltarParaPerfilAluno('Selecione um professor válido.');
 }
 
-require_once __DIR__ . '/../classes/Conexao.php';
-require_once __DIR__ . '/../classes/Usuario.php';
-
 try {
-    $repositorio = new Usuario(Conexao::obter());
-    $repositorio->vincularAlunoAProfessor((int) $_SESSION['usuario_id'], $professorId);
+    $repositorio->vincularAlunoAProfessor($alunoId, $professorId);
     voltarParaPerfilAluno('Você foi vinculado ao professor escolhido.', 'success');
 } catch (PDOException $erro) {
     error_log('FLUX: falha ao vincular aluno ao professor: ' . $erro->getMessage());
